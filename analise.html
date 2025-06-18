@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de Fraquezas Pokémon</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav> <a href="teambuild.html">Times</a>
+        <a href="calculadora.html">Calculadora</a>
+        <a href="analise.html">Análise</a>
+        <a href="index.html">Sair</a>
+    </nav>
+
+    <div class="container">
+        <h1>Analisador de Fraquezas Pokémon</h1>
+
+        <div class="pokemon-selection">
+            <div class="input-group">
+                <label for="pokemon1">Pokémon 1:</label>
+                <input type="text" id="pokemon1" placeholder="Nome do Pokémon">
+                <div class="suggestions" id="suggestions1"></div>
+            </div>
+            
+            <div class="input-group">
+                <label for="pokemon2">Pokémon 2:</label>
+                <input type="text" id="pokemon2" placeholder="Nome do Pokémon">
+                <div class="suggestions" id="suggestions2"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="pokemon3">Pokémon 3:</label>
+                <input type="text" id="pokemon3" placeholder="Nome do Pokémon">
+                <div class="suggestions" id="suggestions3"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="pokemon4">Pokémon 4:</label>
+                <input type="text" id="pokemon4" placeholder="Nome do Pokémon">
+                <div class="suggestions" id="suggestions4"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="pokemon5">Pokémon 5:</label>
+                <input type="text" id="pokemon5" placeholder="Nome do Pokémon">
+                <div class="suggestions" id="suggestions5"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="pokemon6">Pokémon 6:</label>
+                <input type="text" id="pokemon6" placeholder="Nome do Pokémon">
+                <div class="suggestions" id="suggestions6"></div>
+            </div>
+            
+            <button id="analyzeBtn">Analisar Fraquezas</button>
+        </div>
+
+        <div class="results-table">
+            <h2>Resultados da Análise</h2>
+            <table id="weaknessTable">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Imune (0x)</th>
+                        <th>2x Resistente (0.25x)</th>
+                        <th>Resiste (0.5x)</th>
+                        <th>Super Efetivo (2x)</th>
+                        <th>2x Super Efetivo (4x+)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="analysis-section">
+            <h2>Análise da Equipe e Sugestões</h2>
+            <div id="teamAnalysisContent">
+                <p>Nenhuma análise disponível. Por favor, analise sua equipe de Pokémon primeiro.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
