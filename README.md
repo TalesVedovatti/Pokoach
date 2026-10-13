@@ -1,6 +1,6 @@
 # Pokoach
 
-Sistema de gerenciamento que times competitivos de jogos de video game dos jogos de pokemon, focados nos formatos competitivos dos jogos mais atuais (Pokemon Scarlet e Pokemon Violet).
+Sistema de gerenciamento que times competitivos de jogos de video game dos jogos de pokemon, focados nos formatos competitivos dos jogos Pokemon Scarlet e Pokemon Violet.
 
 Objetivo:
 
