@@ -1,209 +1,397 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --ink: #172033;
+    --muted: #68738a;
+    --blue: #3857d6;
+    --blue-dark: #263da8;
+    --gold: #ffcb05;
+    --line: #e0e6f1;
+    --surface: #fff;
+    --bg: #f3f6fc;
+}
+
+* {
+    box-sizing: border-box
+}
+
 body {
-    font-family: 'Arial', sans-serif;
-    background-color:#a1c4fd;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align to the top */
-    min-height: 100vh;
     margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
+    min-height: 100vh;
+    padding: 100px 24px 48px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: radial-gradient(circle at 8% 12%, rgba(255, 203, 5, .12), transparent 24rem), var(--bg)
+}
+
+nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 68px;
+    padding: 12px max(24px, calc((100vw - 1120px)/2));
+    background: rgba(255, 255, 255, .92);
+    border-bottom: 1px solid rgba(224, 230, 241, .9);
+    box-shadow: 0 8px 28px rgba(25, 38, 75, .06);
+    backdrop-filter: blur(14px)
+}
+
+nav::before {
+    content: 'POKOACH';
+    margin-right: auto;
+    color: var(--ink);
+    font-weight: 800;
+    font-size: .9rem;
+    letter-spacing: .15em
+}
+
+nav a {
+    padding: 10px 13px;
+    border-radius: 10px;
+    color: #566178;
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 600;
+    transition: background .18s, color .18s
+}
+
+nav a:hover,
+nav a:focus-visible {
+    background: #eef2ff;
+    color: var(--blue);
+    outline: none
 }
 
 .container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 900px;
-    text-align: center;
+    width: min(100%, 1120px);
+    margin: 0 auto;
+    padding: clamp(18px, 3vw, 34px);
+    border: 1px solid #e7ecf5;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .94);
+    box-shadow: 0 18px 48px rgba(28, 43, 88, .08);
+    justify-content: center;
 }
 
-h1, h2 {
-    color: #4CAF50; /* Green */
-    margin-bottom: 20px;
+h1 {
+    margin: 0 0 28px;
+    text-align: center;
+    font-size: clamp(1.8rem, 4vw, 2.55rem);
+    line-height: 1.15;
+    letter-spacing: -.055em
+}
+
+h2 {
+    margin: 0 0 18px;
+    color: var(--ink);
+    font-size: 1.25rem;
+    letter-spacing: -.025em
 }
 
 .pokemon-selection {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two columns for inputs */
-    gap: 15px;
-    margin-bottom: 30px;
-    padding: 0 50px; /* Add some padding to the sides */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 30px
+}
+
+.input-group {
+    position: relative;
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-width: 0
 }
 
 .pokemon-selection label {
-    text-align: right;
-    padding-right: 10px;
-    align-self: center; /* Vertically align label */
+    color: #46516a;
+    font-size: .85rem;
+    font-weight: 600
 }
 
-.pokemon-selection input[type="text"] {
+.pokemon-selection input[type=text] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box; /* Include padding in width */
+    min-width: 0;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid #d9e0ed;
+    border-radius: 10px;
+    background: #fbfcff;
+    color: var(--ink);
+    font: inherit;
+    font-size: .9rem
+}
+
+.pokemon-selection input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(56, 87, 214, .1);
+    background: #fff
 }
 
 button {
-    grid-column: span 2; /* Make button span both columns */
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 5px;
+    min-height: 44px;
+    padding: 11px 18px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--blue);
+    color: #fff;
+    font: inherit;
+    font-size: .9rem;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
+    transition: transform .18s, background .18s, box-shadow .18s
 }
 
 button:hover {
-    background-color: #45a049;
+    transform: translateY(-1px);
+    background: var(--blue-dark);
+    box-shadow: 0 8px 18px rgba(56, 87, 214, .16)
+}
+
+button:focus-visible {
+    outline: 3px solid rgba(56, 87, 214, .3);
+    outline-offset: 3px
+}
+
+.pokemon-selection button {
+    grid-column: 1/-1;
+    justify-self: start;
+    margin-top: 4px
 }
 
 .results-table {
-    margin-top: 30px;
-    text-align: left; /* Align table content to left */
+    margin-top: 28px
+}
+
+.results-table h2,
+.analysis-section h2 {
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--line)
 }
 
 #weaknessTable {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 14px;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    font-size: .86rem
 }
 
-#weaknessTable th, #weaknessTable td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
+#weaknessTable th,
+#weaknessTable td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    text-align: center
 }
 
 #weaknessTable th {
-    background-color: #f2f2f2;
-    color: #555;
-    font-weight: bold;
+    background: #f2f5fc;
+    color: #46516a;
+    font-weight: 700
 }
 
-/* Basic styling for different Pokémon types in the table (optional) */
-.type-bug { background-color: #A8B820; color: white; }
-.type-dark { background-color: #705848; color: white; }
-.type-dragon { background-color: #7038F8; color: white; }
-.type-electric { background-color: #F8D030; color: #333; }
-.type-fairy { background-color: #EE99AC; color: #333; }
-.type-fighting { background-color: #C03028; color: white; }
-.type-fire { background-color: #F08030; color: white; }
-.type-flying { background-color: #A890F0; color: #333; }
-.type-ghost { background-color: #705898; color: white; }
-.type-grass { background-color: #78C850; color: white; }
-.type-ground { background-color: #E0C068; color: #333; }
-.type-ice { background-color: #98D8D8; color: #333; }
-.type-normal { background-color: #A8A878; color: #333; }
-.type-poison { background-color: #A040A0; color: white; }
-.type-psychic { background-color: #F85888; color: white; }
-.type-rock { background-color: #B8A038; color: white; }
-.type-steel { background-color: #B8B8D0; color: #333; }
-.type-water { background-color: #6890F0; color: white; }
-/* ... (Seu CSS existente) ... */
-
-/* Estilos para o grupo de input e sugestões */
-.input-group {
-    position: relative; /* Essencial para posicionar as sugestões */
-    display: flex; /* Para alinhar label e input */
-    align-items: center; /* Alinha verticalmente */
-    gap: 10px; /* Espaçamento entre label e input */
-    margin-bottom: 15px; /* Espaçamento entre grupos de input */
+#weaknessTable tr:last-child td {
+    border-bottom: 0
 }
 
-.pokemon-selection label {
-    text-align: right;
-    width: 100px; /* Largura fixa para labels para alinhamento */
-    flex-shrink: 0; /* Impede que o label encolha */
+#weaknessTable th:last-child,
+#weaknessTable td:last-child {
+    border-right: 0
 }
 
-.pokemon-selection input[type="text"] {
-    flex-grow: 1; /* Permite que o input preencha o espaço restante */
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-    z-index: 2; /* Garante que o input fique acima das sugestões */
+#weaknessTable tbody tr:hover {
+    filter: brightness(.98)
+}
+
+.analysis-section {
+    margin-top: 30px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fafbff
+}
+
+#teamAnalysisContent {
+    color: #566178;
+    line-height: 1.7
+}
+
+#teamAnalysisContent p {
+    margin: 0
 }
 
 .suggestions {
     position: absolute;
-    top: 100%; /* Posiciona abaixo do input */
-    left: calc(100px + 10px); /* Ajusta a posição para depois do label + gap */
-    width: calc(100% - 100px - 10px); /* Ajusta a largura para o mesmo tamanho do input */
-    max-height: 200px;
+    top: calc(100% + 2px);
+    left: 120px;
+    width: calc(100% - 120px);
+    max-height: 220px;
     overflow-y: auto;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-top: none;
-    border-radius: 0 0 5px 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 10; /* Garante que as sugestões fiquem acima de tudo */
-    list-style: none; /* Remove marcadores de lista */
-    padding: 0;
-    margin: 0;
-    display: none; /* Esconde por padrão, só mostra quando houver sugestões */
+    z-index: 20;
+    display: none;
+    border: 1px solid var(--line);
+    border-radius: 0 0 12px 12px;
+    background: white;
+    box-shadow: 0 12px 30px rgba(23, 32, 51, .14)
 }
 
 .suggestions.show {
-    display: block; /* Mostra a lista de sugestões */
+    display: block
 }
 
-.suggestions div { /* Cada item da sugestão */
-    padding: 10px;
-    cursor: pointer;
-    text-align: left; /* Alinha o texto das sugestões à esquerda */
+.suggestions div {
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer
 }
 
 .suggestions div:hover {
-    background-color: #f0f0f0;
+    background: #eef2ff;
+    color: var(--blue)
 }
 
-/* ... (Seu CSS existente) ... */
-
-/* --- NOVO: Estilos para a Navbar --- */
-nav {
-    background-color: #333; /* Cor de fundo escura para contraste */
-    padding: 10px 20px; /* Espaçamento interno */
-    position: fixed; /* Fixa a navbar no topo da tela */
-    top: 0;
-    left: 0;
-    width: 100%; /* Ocupa a largura total */
-    display: flex; /* Para alinhar os links lado a lado */
-    justify-content: flex-start; /* Alinha os links à esquerda */
-    align-items: center; /* Centraliza verticalmente */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para dar profundidade */
-    z-index: 100; /* Garante que a navbar fique acima de outros elementos */
+.type-bug {
+    background: #A8B820;
+    color: white
 }
 
-nav a {
-    color: white; /* Cor do texto dos links */
-    text-decoration: none; /* Remove sublinhado padrão */
-    padding: 8px 15px; /* Espaçamento em cada link */
-    margin-right: 15px; /* Espaçamento entre os links */
-    border-radius: 5px; /* Cantos levemente arredondados */
-    transition: background-color 0.3s ease; /* Transição suave ao passar o mouse */
+.type-dark {
+    background: #705848;
+    color: white
 }
 
-nav a:hover {
-    background-color: #555; /* Cor de fundo ao passar o mouse */
+.type-dragon {
+    background: #7038F8;
+    color: white
 }
 
-/* Ajuste para o conteúdo principal não ficar escondido pela navbar fixa */
-body {
-    padding-top: 60px; /* Adiciona um padding no topo do body igual à altura da navbar + um pouco */
+.type-electric {
+    background: #F8D030;
+    color: #333
 }
 
-/* Opcional: Se seu container já tem margem superior, talvez precise ajustar */
-.container {
-    margin-top: 20px; /* Ajuste ou remova se o padding-top do body for suficiente */
+.type-fairy {
+    background: #EE99AC;
+    color: #333
 }
 
-/* ... (Resto do seu CSS para .input-group, .suggestions, etc.) ... */
+.type-fighting {
+    background: #C03028;
+    color: white
+}
+
+.type-fire {
+    background: #F08030;
+    color: white
+}
+
+.type-flying {
+    background: #A890F0;
+    color: #333
+}
+
+.type-ghost {
+    background: #705898;
+    color: white
+}
+
+.type-grass {
+    background: #78C850;
+    color: white
+}
+
+.type-ground {
+    background: #E0C068;
+    color: #333
+}
+
+.type-ice {
+    background: #98D8D8;
+    color: #333
+}
+
+.type-normal {
+    background: #A8A878;
+    color: white
+}
+
+.type-poison {
+    background: #A040A0;
+    color: white
+}
+
+.type-psychic {
+    background: #F85888;
+    color: white
+}
+
+.type-rock {
+    background: #B8A038;
+    color: white
+}
+
+.type-steel {
+    background: #B8B8D0;
+    color: #333
+}
+
+.type-water {
+    background: #6890F0;
+    color: white
+}
+
+@media(max-width:760px) {
+    body {
+        padding: 92px 14px 30px
+    }
+
+    nav {
+        gap: 2px;
+        padding: 10px 12px;
+        min-height: 62px;
+        flex-wrap: wrap
+    }
+
+    nav::before {
+        width: 100%;
+        margin: 0 0 2px 8px;
+        font-size: .75rem
+    }
+
+    nav a {
+        padding: 8px 10px;
+        font-size: .82rem
+    }
+
+    .pokemon-selection {
+        grid-template-columns: 1fr
+    }
+
+    .input-group {
+        grid-template-columns: 100px minmax(0, 1fr)
+    }
+
+    .suggestions {
+        left: 110px;
+        width: calc(100% - 110px)
+    }
+
+    .container {
+        border-radius: 18px
+    }
+
+    #weaknessTable {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap
+    }
+}

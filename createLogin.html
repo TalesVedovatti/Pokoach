@@ -15,20 +15,12 @@
         <input type="text" id="username" placeholder="Usuário" required>
         <input type="password" id="password" placeholder="Senha" required>
         <input type="text" id="ingamename" placeholder="InGameName">
-        <button onclick="createAccount()">Create Account</button>
+        <button id="createAccountButton" type="button">Create Account</button>
 
         <div class="error" id="error-msg">Usuário ou senha inválidos</div>
     </div>
 
-    <script>
-        function createAccount() {
-            const user = document.getElementById("username").value;
-            const pass = document.getElementById("password").value;
-            const ingamename = document.getElementById("ingamename").value;
-
-            window.location.href = "index.html";
-        }
-    </script>
+    <script src="assets/js/auth/register.js" defer></script>
 
 </body>
 

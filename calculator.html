@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon Battle Calculator</title>
+  <link rel="stylesheet" href="assets/css/calculator.css">
+  <script src="https://unpkg.com/@pkmn/dex"></script>
+  <script src="https://unpkg.com/@pkmn/data"></script>
+  <script src="https://unpkg.com/@smogon/calc/dist/data/production.min.js"></script>
+  <script src="https://unpkg.com/@smogon/calc"></script>
+</head>
+
+<body>
+  <nav>
+    <a href="teambuild.html">Times</a>
+    <a href="calculator.html">Calculadora</a>
+    <a href="analysis.html">Análise</a>
+    <a href="index.html">Sair</a>
+  </nav>
+  <h1>Pokémon Battle Calculator</h1>
+  <div class="container">
+    <div class="section" id="attacker-section">
+      <h2>Attacker</h2>
+      <label>Pokémon <input list="pokemonList" id="atk-name"></input></label>
+      <label>Level <input type="number" id="atk-level" value="50"></label>
+      <label>Ability <input id="atk-ability"></input></label>
+      <label>Item <input id="atk-item"></input></label>
+      <label>Nature
+        <select name="atk-nature" id="atk-nature">
+          <option value="hardy">Hardy</option>
+          <option value="lonely">Lonely</option>
+          <option value="brave">Brave</option>
+          <option value="adamant">Adamant</option>
+          <option value="naughty">Naughty</option>
+
+          <option value="bold">Bold</option>
+          <option value="docile">Docile</option>
+          <option value="relaxed">Relaxed</option>
+          <option value="impish">Impish</option>
+          <option value="lax">Lax</option>
+
+          <option value="timid">Timid</option>
+          <option value="hasty">Hasty</option>
+          <option value="serious">Serious</option>
+          <option value="jolly">Jolly</option>
+          <option value="naive">Naive</option>
+
+          <option value="modest">Modest</option>
+          <option value="mild">Mild</option>
+          <option value="quiet">Quiet</option>
+          <option value="bashful">Bashful</option>
+          <option value="rash">Rash</option>
+
+          <option value="calm">Calm</option>
+          <option value="gentle">Gentle</option>
+          <option value="sassy">Sassy</option>
+          <option value="careful">Careful</option>
+          <option value="quirky">Quirky</option>
+        </select>
+      </label>
+
+      <label>HP EVs <input type="number" id="atk-hp-evs" value="0"></label>
+      <label>Attack EVs <input type="number" id="atk-atk-evs" value="0"></label>
+      <label>Defense EVs <input type="number" id="atk-def-evs" value="0"></label>
+      <label>Sp. Atk EVs <input type="number" id="atk-spa-evs" value="0"></label>
+      <label>Sp. Def EVs <input type="number" id="atk-spd-evs" value="0"></label>
+      <label>Speed EVs <input type="number" id="atk-spe-evs" value="0"></label>
+
+      <label>Move Name <input list="moveList" type="text" id="atk-move"></label>
+      <label>Move Power <input type="number" id="atk-move-power"></label>
+      <label>Move Type <input type="text" id="atk-move-type"></label>
+      <label>Move Category
+        <input id="atk-move-category"></input>
+      </label>
+
+      <label>Attack Buff <input type="number" id="atk-buff" value="0"></label>
+    </div>
+
+    <div class="section" id="defender-section">
+      <h2>Defender</h2>
+      <label>Pokémon <input list="pokemonList" id="def-name"></input></label>
+      <label>Level <input type="number" id="def-level" value="50"></label>
+      <label>Ability <input id="def-ability"></input></label>
+      <label>Item <input id="def-item"></input></label>
+      <label>Nature
+        <select name="def-nature" id="def-nature">
+          <option value="hardy">Hardy</option>
+          <option value="lonely">Lonely</option>
+          <option value="brave">Brave</option>
+          <option value="adamant">Adamant</option>
+          <option value="naughty">Naughty</option>
+
+          <option value="bold">Bold</option>
+          <option value="docile">Docile</option>
+          <option value="relaxed">Relaxed</option>
+          <option value="impish">Impish</option>
+          <option value="lax">Lax</option>
+
+          <option value="timid">Timid</option>
+          <option value="hasty">Hasty</option>
+          <option value="serious">Serious</option>
+          <option value="jolly">Jolly</option>
+          <option value="naive">Naive</option>
+
+          <option value="modest">Modest</option>
+          <option value="mild">Mild</option>
+          <option value="quiet">Quiet</option>
+          <option value="bashful">Bashful</option>
+          <option value="rash">Rash</option>
+
+          <option value="calm">Calm</option>
+          <option value="gentle">Gentle</option>
+          <option value="sassy">Sassy</option>
+          <option value="careful">Careful</option>
+          <option value="quirky">Quirky</option>
+        </select>
+      </label>
+
+      <label>HP EVs <input type="number" id="def-hp-evs" value="0"></label>
+      <label>Attack EVs <input type="number" id="def-atk-evs" value="0"></label>
+      <label>Defense EVs <input type="number" id="def-def-evs" value="0"></label>
+      <label>Sp. Atk EVs <input type="number" id="def-spa-evs" value="0"></label>
+      <label>Sp. Def EVs <input type="number" id="def-spd-evs" value="0"></label>
+      <label>Speed EVs <input type="number" id="def-spe-evs" value="0"></label>
+
+      <label>Defense Debuff <input type="number" id="def-debuff" value="0"></label>
+    </div>
+  </div>
+
+  <datalist id="pokemonList"></datalist>
+  <datalist id="moveList"></datalist>
+
+  <button id="calculateDamageButton" type="button">Calculate Damage</button>
+  <div id="result"></div>
+
+  <script src="assets/js/calculator/calculator.js" defer></script>
+</body>
+
+</html>

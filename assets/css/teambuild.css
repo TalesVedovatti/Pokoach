@@ -1,198 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
-    --primary: #00acc1;
-    --secondary: #f0f8ff;
-    --accent: #00796b;
-    --text: #333;
-    --bg: #a1c4fd;
-    --white: #fff;
+    --ink: #172033;
+    --muted: #68738a;
+    --blue: #3857d6;
+    --blue-dark: #263da8;
+    --gold: #ffcb05;
+    --line: #e0e6f1;
+    --surface: #fff;
+    --bg: #f3f6fc;
+    --teal: #159a91;
 }
 
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding: 20px;
+    margin: 0;
+    padding: 100px 24px 48px;
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at 8% 12%, rgba(255, 203, 5, .12), transparent 24rem), var(--bg);
+}
+
+nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 68px;
+    padding: 12px max(24px, calc((100vw - 1120px)/2));
+    background: rgba(255, 255, 255, .92);
+    border-bottom: 1px solid rgba(224, 230, 241, .9);
+    box-shadow: 0 8px 28px rgba(25, 38, 75, .06);
+    backdrop-filter: blur(14px);
+}
+
+nav::before {
+    content: 'POKOACH';
+    margin-right: auto;
+    color: var(--ink);
+    font-weight: 800;
+    font-size: .9rem;
+    letter-spacing: .15em;
+}
+
+nav a {
+    padding: 10px 13px;
+    border-radius: 10px;
+    color: #566178;
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 600;
+    transition: background .18s, color .18s;
+}
+
+nav a:hover,
+nav a:focus-visible {
+    background: #eef2ff;
+    color: var(--blue);
+    outline: none;
 }
 
 h1 {
+    max-width: 1000px;
+    margin: 16px auto 26px;
     text-align: center;
-    margin-bottom: 30px;
-    font-size: 2.5rem;
-    color: var(--accent);
-    text-shadow: 1px 1px #ccc;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    line-height: 1.12;
+    letter-spacing: -.055em;
 }
 
 .team-builder {
     max-width: 1000px;
-    margin: auto;
-    background-color: var(--white);
+    margin: 0 auto;
+    padding: 24px;
+    border: 1px solid #e8edf6;
     border-radius: 24px;
-    padding: 30px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    background: var(--surface);
+    box-shadow: 0 18px 48px rgba(28, 43, 88, .08);
 }
 
 .pokemon-slot {
-
-
-    margin-bottom: 20px;
-    padding: 15px;
-    border-radius: 16px;
-    background-color: var(--secondary);
-    gap: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin: 0 0 18px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff, #f8faff);
+    box-shadow: 0 5px 16px rgba(28, 43, 88, .04);
 }
 
-.autocomplete-suggestions {
-    position: absolute;
-    /* <- antes estava relative */
-    top: 100%;
-    /* vai ficar abaixo do input */
-    left: 0;
-    background: var(--white);
-    border: 1px solid #ccc;
-    width: 100%;
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 10;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-
-.autocomplete-suggestions div {
-    padding: 10px;
-    cursor: pointer;
-}
-
-.autocomplete-suggestions div:hover {
-    background-color: #e0f7fa;
-}
-
-.pokemon-slot input,
-.pokemon-slot select {
-    padding: 12px;
-    border: 1px solid #bbb;
-    border-radius: 10px;
-    font-size: 1rem;
-    min-width: 200px;
-}
-
-.pokemon-slot button {
-    background-color: var(--primary);
-    color: var(--white);
-    border: none;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.pokemon-slot button:hover {
-    background-color: #0097a7;
-    transform: scale(1.05);
-}
-
-.add-button {
-    display: block;
-    margin: 30px auto 0;
-    background-color: var(--accent);
-    color: var(--white);
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.add-button:hover {
-    background-color: #004d40;
-    transform: scale(1.05);
-}
-
-.pokemon-details {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.pokemon-image {
-    width: 96px;
-    height: 96px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background-color: #fff;
+.pokemon-slot:last-child {
+    margin-bottom: 0;
 }
 
 #line1,
 #line2,
+#line3,
 #line4,
 #line5 {
     display: flex;
-    margin-top: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
     position: relative;
 }
 
-#line4 {
-    gap: 5px;
+#line1 {
+    margin-top: 0;
 }
 
-nav {
-    background-color: #333;
-    /* Cor de fundo escura para contraste */
-    padding: 10px 20px;
-    /* Espaçamento interno */
-    position: fixed;
-    /* Fixa a navbar no topo da tela */
-    top: 0;
+.pokemon-slot input,
+.pokemon-slot select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d9e0ed;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-size: .9rem;
+}
+
+.pokemon-slot input:focus,
+.pokemon-slot select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(56, 87, 214, .1);
+}
+
+.pokemon-slot #line1>div {
+    width: min(100%, 280px) !important;
+}
+
+.pokemon-slot #line1 input {
+    width: 100%;
+}
+
+.pokemon-image {
+    flex: 0 0 96px;
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.pokemon-details {
+    flex: 1 1 220px;
+    color: var(--muted);
+    font-size: .88rem;
+    line-height: 1.6;
+}
+
+.ability-select {
+    max-width: 260px;
+}
+
+#line4 select {
+    flex: 1 1 160px;
+    width: auto !important;
+}
+
+.pokemon-slot button,
+.add-button {
+    min-height: 44px;
+    padding: 11px 17px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--blue);
+    color: white;
+    font: inherit;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .18s, background .18s, box-shadow .18s;
+}
+
+.pokemon-slot button:hover,
+.add-button:hover {
+    transform: translateY(-1px);
+    background: var(--blue-dark);
+    box-shadow: 0 8px 18px rgba(56, 87, 214, .18);
+}
+
+.add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 18px 8px 0 0;
+}
+
+#exportTeamButton {
+    background: var(--teal);
+}
+
+#exportTeamButton:hover {
+    background: #107b74;
+}
+
+.autocomplete-suggestions {
+    position: absolute;
+    top: calc(100% + 4px);
     left: 0;
     width: 100%;
-    /* Ocupa a largura total */
-    display: flex;
-    /* Para alinhar os links lado a lado */
-    justify-content: flex-start;
-    /* Alinha os links à esquerda */
-    align-items: center;
-    /* Centraliza verticalmente */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    /* Sombra para dar profundidade */
-    z-index: 100;
-    /* Garante que a navbar fique acima de outros elementos */
+    max-height: 220px;
+    overflow: auto;
+    z-index: 20;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 12px 30px rgba(23, 32, 51, .14);
 }
 
-nav a {
-    color: white;
-    /* Cor do texto dos links */
-    text-decoration: none;
-    /* Remove sublinhado padrão */
-    padding: 8px 15px;
-    /* Espaçamento em cada link */
-    margin-right: 15px;
-    /* Espaçamento entre os links */
-    border-radius: 5px;
-    /* Cantos levemente arredondados */
-    transition: background-color 0.3s ease;
-    /* Transição suave ao passar o mouse */
+.autocomplete-suggestions div {
+    padding: 11px 13px;
+    color: var(--ink);
+    cursor: pointer;
 }
 
-nav a:hover {
-    background-color: #555;
-    /* Cor de fundo ao passar o mouse */
+.autocomplete-suggestions div:hover {
+    background: #eef2ff;
+    color: var(--blue);
 }
 
-/* Ajuste para o conteúdo principal não ficar escondido pela navbar fixa */
-body {
-    padding-top: 60px;
-    /* Adiciona um padding no topo do body igual à altura da navbar + um pouco */
-}
+@media(max-width:640px) {
+    body {
+        padding: 88px 14px 30px
+    }
 
-/* Opcional: Se seu container já tem margem superior, talvez precise ajustar */
-.container {
-    margin-top: 20px;
-    /* Ajuste ou remova se o padding-top do body for suficiente */
+    nav {
+        gap: 2px;
+        padding: 10px 12px;
+        min-height: 62px;
+        flex-wrap: wrap
+    }
+
+    nav::before {
+        width: 100%;
+        margin: 0 0 2px 8px;
+        font-size: .75rem
+    }
+
+    nav a {
+        padding: 8px 10px;
+        font-size: .82rem
+    }
+
+    .team-builder {
+        padding: 14px;
+        border-radius: 18px
+    }
+
+    .pokemon-slot {
+        padding: 13px
+    }
+
+    #line4 select {
+        flex-basis: calc(50% - 8px)
+    }
+
+    .add-button {
+        width: 100%;
+        margin-right: 0
+    }
 }
