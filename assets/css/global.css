@@ -1,0 +1,209 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color:#a1c4fd;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 900px;
+    text-align: center;
+}
+
+h1, h2 {
+    color: #4CAF50; /* Green */
+    margin-bottom: 20px;
+}
+
+.pokemon-selection {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for inputs */
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 0 50px; /* Add some padding to the sides */
+}
+
+.pokemon-selection label {
+    text-align: right;
+    padding-right: 10px;
+    align-self: center; /* Vertically align label */
+}
+
+.pokemon-selection input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+button {
+    grid-column: span 2; /* Make button span both columns */
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.results-table {
+    margin-top: 30px;
+    text-align: left; /* Align table content to left */
+}
+
+#weaknessTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#weaknessTable th, #weaknessTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+#weaknessTable th {
+    background-color: #f2f2f2;
+    color: #555;
+    font-weight: bold;
+}
+
+/* Basic styling for different Pokémon types in the table (optional) */
+.type-bug { background-color: #A8B820; color: white; }
+.type-dark { background-color: #705848; color: white; }
+.type-dragon { background-color: #7038F8; color: white; }
+.type-electric { background-color: #F8D030; color: #333; }
+.type-fairy { background-color: #EE99AC; color: #333; }
+.type-fighting { background-color: #C03028; color: white; }
+.type-fire { background-color: #F08030; color: white; }
+.type-flying { background-color: #A890F0; color: #333; }
+.type-ghost { background-color: #705898; color: white; }
+.type-grass { background-color: #78C850; color: white; }
+.type-ground { background-color: #E0C068; color: #333; }
+.type-ice { background-color: #98D8D8; color: #333; }
+.type-normal { background-color: #A8A878; color: #333; }
+.type-poison { background-color: #A040A0; color: white; }
+.type-psychic { background-color: #F85888; color: white; }
+.type-rock { background-color: #B8A038; color: white; }
+.type-steel { background-color: #B8B8D0; color: #333; }
+.type-water { background-color: #6890F0; color: white; }
+/* ... (Seu CSS existente) ... */
+
+/* Estilos para o grupo de input e sugestões */
+.input-group {
+    position: relative; /* Essencial para posicionar as sugestões */
+    display: flex; /* Para alinhar label e input */
+    align-items: center; /* Alinha verticalmente */
+    gap: 10px; /* Espaçamento entre label e input */
+    margin-bottom: 15px; /* Espaçamento entre grupos de input */
+}
+
+.pokemon-selection label {
+    text-align: right;
+    width: 100px; /* Largura fixa para labels para alinhamento */
+    flex-shrink: 0; /* Impede que o label encolha */
+}
+
+.pokemon-selection input[type="text"] {
+    flex-grow: 1; /* Permite que o input preencha o espaço restante */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    z-index: 2; /* Garante que o input fique acima das sugestões */
+}
+
+.suggestions {
+    position: absolute;
+    top: 100%; /* Posiciona abaixo do input */
+    left: calc(100px + 10px); /* Ajusta a posição para depois do label + gap */
+    width: calc(100% - 100px - 10px); /* Ajusta a largura para o mesmo tamanho do input */
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10; /* Garante que as sugestões fiquem acima de tudo */
+    list-style: none; /* Remove marcadores de lista */
+    padding: 0;
+    margin: 0;
+    display: none; /* Esconde por padrão, só mostra quando houver sugestões */
+}
+
+.suggestions.show {
+    display: block; /* Mostra a lista de sugestões */
+}
+
+.suggestions div { /* Cada item da sugestão */
+    padding: 10px;
+    cursor: pointer;
+    text-align: left; /* Alinha o texto das sugestões à esquerda */
+}
+
+.suggestions div:hover {
+    background-color: #f0f0f0;
+}
+
+/* ... (Seu CSS existente) ... */
+
+/* --- NOVO: Estilos para a Navbar --- */
+nav {
+    background-color: #333; /* Cor de fundo escura para contraste */
+    padding: 10px 20px; /* Espaçamento interno */
+    position: fixed; /* Fixa a navbar no topo da tela */
+    top: 0;
+    left: 0;
+    width: 100%; /* Ocupa a largura total */
+    display: flex; /* Para alinhar os links lado a lado */
+    justify-content: flex-start; /* Alinha os links à esquerda */
+    align-items: center; /* Centraliza verticalmente */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para dar profundidade */
+    z-index: 100; /* Garante que a navbar fique acima de outros elementos */
+}
+
+nav a {
+    color: white; /* Cor do texto dos links */
+    text-decoration: none; /* Remove sublinhado padrão */
+    padding: 8px 15px; /* Espaçamento em cada link */
+    margin-right: 15px; /* Espaçamento entre os links */
+    border-radius: 5px; /* Cantos levemente arredondados */
+    transition: background-color 0.3s ease; /* Transição suave ao passar o mouse */
+}
+
+nav a:hover {
+    background-color: #555; /* Cor de fundo ao passar o mouse */
+}
+
+/* Ajuste para o conteúdo principal não ficar escondido pela navbar fixa */
+body {
+    padding-top: 60px; /* Adiciona um padding no topo do body igual à altura da navbar + um pouco */
+}
+
+/* Opcional: Se seu container já tem margem superior, talvez precise ajustar */
+.container {
+    margin-top: 20px; /* Ajuste ou remova se o padding-top do body for suficiente */
+}
+
+/* ... (Resto do seu CSS para .input-group, .suggestions, etc.) ... */
