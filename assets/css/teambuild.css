@@ -196,7 +196,8 @@ h1 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin: 18px 8px 0 0;
+    margin: 18px 8px 0 8px;
+
 }
 
 #exportTeamButton {
@@ -230,6 +231,12 @@ h1 {
 .autocomplete-suggestions div:hover {
     background: #eef2ff;
     color: var(--blue);
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 @media(max-width:640px) {
@@ -272,4 +279,5 @@ h1 {
         width: 100%;
         margin-right: 0
     }
+    
 }

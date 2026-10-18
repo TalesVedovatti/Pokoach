@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return pokemonName === finalStageName;
     }
 
-    // --- NOVO: Função para obter e sortear Pokémon ---
+    // --- Função para obter e sortear Pokémon ---
     async function suggestSpecificPokemon(suggestedTypes, currentPokemonNamesInTeam) {
         if (suggestedTypes.size === 0 || currentPokemonNamesInTeam.length === 6) {
             return []; // Não há tipos para sugerir ou time completo
@@ -264,11 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return Array.from(finalSuggestions);
     }
-    // --- FIM NOVO: Função para obter e sortear Pokémon ---
+    // --- FIM: Função para obter e sortear Pokémon ---
 
 
     analyzeBtn.addEventListener('click', async () => {
-        weaknessTableBody.innerHTML = ''; // Clear previous results
+        weaknessTableBody.innerHTML = ''; // Limpa resultados anteriores
         teamAnalysisContent.innerHTML = '<p>Analisando equipe...</p>'; // Mensagem de carregamento
 
         const pokemonNames = pokemonInputs
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 analysisHtml += `</ul>`;
             }
 
-            // --- Sugestão de Pokémon Específicos de Último Estágio (Modificado) ---
+            // --- Sugestão de Pokémon Específicos de Último Estágio  ---
             const emptySlots = 6 - filledSlotsCount;
             if (emptySlots > 0 && suggestedTypesForCoverage.size > 0) {
                 analysisHtml += `<h3>Sugestões de Pokémon para Preencher ${emptySlots} Slot${emptySlots > 1 ? 's' : ''}:</h3>`;
