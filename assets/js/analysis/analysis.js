@@ -205,66 +205,116 @@ document.addEventListener('DOMContentLoaded', () => {
         return pokemonName === finalStageName;
     }
 
-    // --- Função para obter e sortear Pokémon ---
-    async function suggestSpecificPokemon(suggestedTypes, currentPokemonNamesInTeam) {
-        if (suggestedTypes.size === 0 || currentPokemonNamesInTeam.length === 6) {
-            return []; // Não há tipos para sugerir ou time completo
-        }
+    // Seleção determinística com prioridade para as fraquezas mais frequentes.
+    async function suggestSpecificPokemon(suggestedTypes, currentPokemonNamesInTeam, weaknessCounts) {
+        if (suggestedTypes.size === 0 || currentPokemonNamesInTeam.length >= 6) return [];
 
-        const finalSuggestions = new Set();
-        const POKEMONS_TO_LOAD_PER_TYPE = 15; // Aumentado para ter mais opções para sortear
-        const POKEMONS_TO_SUGGEST_PER_TYPE = 3; // Quantos Pokémon sortear por tipo
-
-        for (const type of suggestedTypes) {
-            const potentialPokemonForType = [];
+        const teamNames = new Set(currentPokemonNamesInTeam.map(name => name.toLowerCase()));
+        const candidateLists = [];
+        for (const type of Array.from(suggestedTypes).sort()) {
             const typeData = await getTypeData(type);
-            if (!typeData || !typeData.pokemon) continue;
+            if (!typeData || !Array.isArray(typeData.pokemon)) continue;
+            candidateLists.push(typeData.pokemon.map(entry => entry.pokemon.name)
+                .filter(name => !name.includes('-') && !teamNames.has(name)).sort());
+        }
 
-            let checkedCount = 0;
-            // Percorre os Pokémon do tipo até encontrar um número suficiente ou acabar a lista
-            for (const pokemonEntry of typeData.pokemon) {
-                if (potentialPokemonForType.length >= POKEMONS_TO_LOAD_PER_TYPE) break;
-                
-                const pokemonName = pokemonEntry.pokemon.name;
+        // Distribuir a amostragem entre os tipos, evitando que os primeiros
+        // 100 nomes alfabéticos monopolizem os candidatos.
+        const candidates = new Set();
+        const MAX_CANDIDATES_TO_CHECK = 180;
+        let index = 0;
+        while (candidates.size < MAX_CANDIDATES_TO_CHECK &&
+               candidateLists.some(list => index < list.length)) {
+            for (const list of candidateLists) {
+                if (index < list.length) candidates.add(list[index]);
+                if (candidates.size >= MAX_CANDIDATES_TO_CHECK) break;
+            }
+            index++;
+        }
 
-                // Ignorar formas alternativas e Pokémon já no time
-                if (pokemonName.includes('-')) continue; 
-                if (currentPokemonNamesInTeam.includes(pokemonName)) continue;
+        const attackTypeData = {};
+        for (const type of Object.keys(weaknessCounts)) {
+            attackTypeData[type] = await getTypeData(type);
+        }
 
-                // Verificar se é estágio final (usando cache para otimizar)
-                if (typeof pokemonCache[pokemonName] !== 'undefined' && pokemonCache[pokemonName].isFinal === true) {
-                    potentialPokemonForType.push(pokemonName);
+        const eligiblePokemon = [];
+        for (const pokemonName of candidates) {
+            const speciesData = await getPokemonSpeciesData(pokemonName);
+            if (!speciesData || speciesData.is_legendary || speciesData.is_mythical) continue;
+
+            let pokemon = pokemonCache[pokemonName];
+            const isFinal = pokemon && typeof pokemon.isFinal === 'boolean'
+                ? pokemon.isFinal : await isFinalEvolution(pokemonName);
+            if (!isFinal) continue;
+
+            if (!pokemon || !Array.isArray(pokemon.types) || !Array.isArray(pokemon.stats)) {
+                try {
+                    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+                    if (!response.ok) continue;
+                    pokemon = await response.json();
+                    pokemonCache[pokemonName] = pokemon;
+                } catch (error) {
+                    console.error(`Erro ao buscar ${pokemonName}:`, error);
                     continue;
-                } else if (typeof pokemonCache[pokemonName] !== 'undefined' && pokemonCache[pokemonName].isFinal === false) {
-                     continue;
-                }
-
-                // Se não está no cache ou é a primeira vez verificando
-                const isFinal = await isFinalEvolution(pokemonName);
-                if (isFinal) {
-                    potentialPokemonForType.push(pokemonName);
-                    pokemonCache[pokemonName] = pokemonCache[pokemonName] || {};
-                    pokemonCache[pokemonName].isFinal = true;
-                } else {
-                    pokemonCache[pokemonName] = pokemonCache[pokemonName] || {};
-                    pokemonCache[pokemonName].isFinal = false;
                 }
             }
+            pokemonCache[pokemonName].isFinal = true;
+            const types = pokemon.types.map(entry => entry.type.name);
+            const resistantTo = new Set(Object.keys(weaknessCounts).filter(type =>
+                attackTypeData[type] && getPokemonEffectiveness(pokemon, attackTypeData[type]) < 1
+            ));
+            eligiblePokemon.push({
+                name: pokemonName,
+                resistantTo,
+                coverageCount: types.filter(type => suggestedTypes.has(type)).length,
+                baseStatTotal: pokemon.stats.reduce((sum, stat) => sum + (stat.base_stat || 0), 0)
+            });
+        }
 
-            // Sortear 3 Pokémon desse tipo
-            if (potentialPokemonForType.length > 0) {
-                // Embaralha o array
-                for (let i = potentialPokemonForType.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [potentialPokemonForType[i], potentialPokemonForType[j]] = [potentialPokemonForType[j], potentialPokemonForType[i]];
-                }
-                // Pega os 3 primeiros (ou menos se não houver 3)
-                potentialPokemonForType.slice(0, POKEMONS_TO_SUGGEST_PER_TYPE).forEach(p => finalSuggestions.add(p));
+        const byMerit = (a, b) => b.coverageCount - a.coverageCount ||
+            b.baseStatTotal - a.baseStatTotal || a.name.localeCompare(b.name);
+        eligiblePokemon.sort(byMerit);
+
+        const selected = [];
+        const selectedNames = new Set();
+        const resistanceCounts = {};
+        const priorityTypes = Object.keys(weaknessCounts)
+            .sort((a, b) => weaknessCounts[b] - weaknessCounts[a] || a.localeCompare(b));
+
+        // Primeiro garantir, quando possível, dois resistentes/imunes por tipo
+        // vulnerável, priorizando QUANTOS membros são fracos, não o multiplicador 4x.
+        while (selected.length < 8) {
+            const unmet = priorityTypes.filter(type => (resistanceCounts[type] || 0) < 2);
+            if (!unmet.length) break;
+            const next = eligiblePokemon.filter(p => !selectedNames.has(p.name))
+                .map(p => ({
+                    pokemon: p,
+                    gain: unmet.reduce((sum, type) =>
+                        sum + (p.resistantTo.has(type) ? weaknessCounts[type] : 0), 0)
+                }))
+                .filter(entry => entry.gain > 0)
+                .sort((a, b) => b.gain - a.gain || byMerit(a.pokemon, b.pokemon))[0];
+            if (!next) break;
+            selected.push(next.pokemon);
+            selectedNames.add(next.pokemon.name);
+            for (const type of next.pokemon.resistantTo) {
+                resistanceCounts[type] = (resistanceCounts[type] || 0) + 1;
             }
         }
-        return Array.from(finalSuggestions);
+
+        // Completar oito sugestões sem aleatoriedade.
+        for (const pokemon of eligiblePokemon) {
+            if (selected.length >= 8) break;
+            if (!selectedNames.has(pokemon.name)) {
+                selected.push(pokemon);
+                selectedNames.add(pokemon.name);
+            }
+        }
+
+        return selected.sort((a, b) => b.baseStatTotal - a.baseStatTotal ||
+            a.name.localeCompare(b.name)).map(p => p.name);
     }
-    // --- FIM: Função para obter e sortear Pokémon ---
+    // --- FIM: Seleção de Pokémon ---
 
 
     analyzeBtn.addEventListener('click', async () => {
@@ -397,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 analysisHtml += `<p>Além disso, sua equipe possui fraquezas **Super Efetivas (2x)** contra os seguintes tipos (número de Pokémon vulneráveis):</p><ul>`;
                 weakTypes.forEach(w => {
                     analysisHtml += `<li><span class="type-${w.type}">${w.type.charAt(0).toUpperCase() + w.type.slice(1)}</span>: ${w.count} Pokémon</li>`;
-                     if (doubleWeakTypes.length === 0) {
+                     {
                         ALL_TYPES.forEach(typeToCheck => {
                             const interactions = TYPE_INTERACTIONS[typeToCheck];
                             if (interactions && (interactions.resists.includes(w.type) || interactions.immune_to.includes(w.type))) {
@@ -428,10 +478,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- Sugestão de Pokémon Específicos de Último Estágio  ---
             const emptySlots = 6 - filledSlotsCount;
             if (emptySlots > 0 && suggestedTypesForCoverage.size > 0) {
-                analysisHtml += `<h3>Sugestões de Pokémon para Preencher ${emptySlots} Slot${emptySlots > 1 ? 's' : ''}:</h3>`;
-                analysisHtml += `<p>Para complementar sua equipe, considere adicionar um dos seguintes Pokémon (último estágio evolutivo), baseados nos tipos sugeridos:</p><ul>`;
+                analysisHtml += `<h3>Sugestões de Pokémon para sua equipe:</h3>`;
+                analysisHtml += `<p>Confira até 8 opções de Pokémon (último estágio evolutivo), priorizando ao menos duas resistências ou imunidades por fraqueza recorrente, quando possível. As opções estão ordenadas por BST, do maior para o menor:</p><ul>`;
                 
-                const suggestedPokemon = await suggestSpecificPokemon(suggestedTypesForCoverage, pokemonNames); // Passa os nomes já no time
+                const weaknessCounts = Object.fromEntries(ALL_TYPES.map(type => [type, typeSummary[type].singleWeak + typeSummary[type].doubleWeak]).filter(([, count]) => count > 0));
+                const suggestedPokemon = await suggestSpecificPokemon(suggestedTypesForCoverage, pokemonNames, weaknessCounts); // Passa os nomes já no time
 
                 if (suggestedPokemon.length > 0) {
                     suggestedPokemon.forEach(pName => {
