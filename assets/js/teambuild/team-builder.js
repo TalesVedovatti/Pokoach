@@ -1,5 +1,50 @@
     const maxTeamSize = 6;
     let pokemonList = [];
+    const teamId = Number(new URLSearchParams(location.search).get('id'));
+    const statusElement = document.getElementById('saveStatus');
+    const teamNameInput = document.getElementById('teamName');
+    let saveTimer;
+    let saveQueue = Promise.resolve();
+    let loadingTeam = true;
+    let revision = 0;
+    let savedRevision = 0;
+    function serializeTeam() {
+      return [...document.querySelectorAll('.pokemon-slot')].map(slot => ({
+        name: slot.querySelector('input')?.value.trim().toLowerCase() || '',
+        ability: slot.querySelector('.ability-select')?.value || '',
+        moves: [...slot.querySelectorAll('.move-select')].map(select => select.value || '')
+      }));
+    }
+    function markDirty() {
+      if (loadingTeam) return;
+      revision++;
+      statusElement.textContent = 'Alterações pendentes...';
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {saveTeam().catch(() => {});}, 700);
+    }
+    function saveTeam() {
+      clearTimeout(saveTimer);
+      const version = revision;
+      const payload = {name:teamNameInput.value.trim(), pokemon:serializeTeam()};
+      saveQueue = saveQueue.catch(() => {}).then(async () => {
+        if (!payload.name) throw new Error('Informe um nome para o time.');
+        statusElement.textContent = 'Salvando...';
+        const response = await fetch(`/api/teams/${teamId}`, {
+          method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Não foi possível salvar.');
+        savedRevision = Math.max(savedRevision, version);
+        if (savedRevision === revision) statusElement.textContent = '✓ Todas as alterações salvas';
+      }).catch(error => { statusElement.textContent = `Erro ao salvar: ${error.message}`; throw error; });
+      return saveQueue;
+    }
+    async function leaveEditor(url) {
+      try { await saveTeam(); location.assign(url); }
+      catch(error) { alert('Não foi possível salvar o time. Verifique a conexão e tente novamente antes de sair.'); }
+    }
+
 
     const vgcSuggestions = {
       "flutter-mane": ["Moonblast", "Shadow Ball", "Protect", "Dazzling Gleam"],
@@ -45,6 +90,7 @@
 
       const input = document.createElement('input');
       input.placeholder = 'Nome do Pokémon';
+      input.addEventListener('input', () => { slot.dataset.pokemonName = ''; markDirty(); });
 
       const suggestionsBox = document.createElement('div');
       suggestionsBox.className = 'autocomplete-suggestions';
@@ -65,6 +111,7 @@
             input.value = match;
             suggestionsBox.style.display = 'none';
             fetchPokemonData(match, slot);
+            markDirty();
           };
           suggestionsBox.appendChild(suggestion);
         });
@@ -92,20 +139,20 @@
 
       const moveSelect = document.createElement('select');
       moveSelect.id = 'move1';
-      moveSelect.style.width = '200px';
+      moveSelect.style.width = '200px'; moveSelect.className = 'move-select';
       const moveSelect2 = document.createElement('select');
       moveSelect2.id = 'move2';
-      moveSelect2.style.width = '200px';
+      moveSelect2.style.width = '200px'; moveSelect2.className = 'move-select';
       const moveSelect3 = document.createElement('select');
       moveSelect3.id = 'move3';
-      moveSelect3.style.width = '200px';
+      moveSelect3.style.width = '200px'; moveSelect3.className = 'move-select';
       const moveSelect4 = document.createElement('select');
       moveSelect4.id = 'move4';
-      moveSelect4.style.width = '200px';
+      moveSelect4.style.width = '200px'; moveSelect4.className = 'move-select';
 
       const removeButton = document.createElement('button');
       removeButton.textContent = 'Remover';
-      removeButton.onclick = () => container.removeChild(slot);
+      removeButton.onclick = () => { container.removeChild(slot); markDirty(); };
       const inputWrapper = document.createElement('div');
       inputWrapper.style.position = 'relative';
       inputWrapper.style.width = '200px'; // ou a largura do input
@@ -134,9 +181,12 @@
       line5.appendChild(removeButton);
 
       container.appendChild(slot);
+      slot.addEventListener('change', markDirty);
+      markDirty();
+      return slot;
     }
 
-    async function fetchPokemonData(name, slot) {
+    async function fetchPokemonData(name, slot, previous = null) {
       const details = slot.querySelector('.pokemon-details');
       const img = slot.querySelector('img');
       const moveSelect = slot.querySelector('#move1');
@@ -170,7 +220,7 @@
         moveSelect4.innerHTML = '';
 
         // Populates the selects
-        const moves = data.moves.map(m => m.move.name).sort();
+        const moves = ['', ...data.moves.map(m => m.move.name).sort()];
 
 
         moves.forEach(move => {
@@ -211,6 +261,13 @@
 
 
         slot.dataset.pokemonName = name; // Save Pokémon name for export
+        if (previous) {
+          abilitySelect.value = previous.ability || abilitySelect.value;
+          [moveSelect,moveSelect2,moveSelect3,moveSelect4].forEach((select,index) => {
+            if (previous.moves?.[index] && [...select.options].some(option => option.value === previous.moves[index])) select.value = previous.moves[index];
+          });
+        }
+        markDirty();
 
       } catch (err) {
         details.innerHTML = `<span style="color: red;">Erro: ${err.message}</span>`;
@@ -224,7 +281,7 @@
 
       slots.forEach(slot => {
         const name = slot.dataset.pokemonName;
-        const moves = Array.from(slot.querySelectorAll('select option:checked')).map(opt => opt.value);
+        const moves = Array.from(slot.querySelectorAll('.move-select')).map(select => select.value);
         const ability = slot.querySelector('.ability-select')?.value || '';
         if (name) {
           team.push({ name, moves, ability });
@@ -244,4 +301,35 @@
     document.getElementById('addPokemonButton').addEventListener('click', addPokemonSlot);
     document.getElementById('exportTeamButton').addEventListener('click', exportTeam);
 
-    fetchAllPokemonNames();
+    teamNameInput.addEventListener('input', markDirty);
+    document.getElementById('saveTeamButton').addEventListener('click', () => saveTeam().catch(error => alert(error.message)));
+    document.getElementById('backToTeams').addEventListener('click', event => {event.preventDefault();leaveEditor('teambuild.html');});
+    document.querySelectorAll('nav a').forEach(link => {
+      if (link.id === 'logoutLink') return;
+      link.addEventListener('click', event => {event.preventDefault();leaveEditor(link.href);});
+    });
+    // Tenta concluir gravações pendentes antes de trocar de página/aba.
+    window.addEventListener('pagehide', () => {
+      if (revision > savedRevision) {
+        navigator.sendBeacon?.(`/api/teams/${teamId}`, new Blob([JSON.stringify({name:teamNameInput.value.trim(),pokemon:serializeTeam()})], {type:'application/json'}));
+      }
+    });
+    async function initialize() {
+      if (!Number.isSafeInteger(teamId) || teamId <= 0) { location.replace('teambuild.html'); return; }
+      try {
+        const response = await fetch(`/api/teams/${teamId}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Time não encontrado.');
+        teamNameInput.value = data.team.name;
+        await fetchAllPokemonNames().catch(() => { statusElement.textContent = 'Autocompletar indisponível. Você ainda pode editar o time.'; });
+        const entries = data.team.pokemon;
+        for (const pokemon of entries) {
+          const slot = addPokemonSlot();
+          slot.querySelector('input').value = pokemon.name;
+          if (pokemon.name) await fetchPokemonData(pokemon.name, slot, pokemon);
+        }
+        loadingTeam = false;
+        statusElement.textContent = '✓ Time carregado e salvo';
+      } catch(error) { statusElement.textContent = `Erro: ${error.message}`; document.getElementById('addPokemonButton').disabled = true; }
+    }
+    initialize();

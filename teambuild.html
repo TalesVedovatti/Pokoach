@@ -1,38 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pokoach</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/teambuild.css">
-  <style>
-
-  </style>
-</head>
-
-<body>
-  <nav>
-    <a href="teambuild.html">Times</a>
-    <a href="calculator.html">Calculadora</a>
-    <a href="analysis.html">Análise</a>
-    <a href="index.html">Sair</a>
-  </nav>
-  <h1>Pokoach Team Builder</h1>
-  <div class="team-builder" id="teamBuilder">
-    <!-- Slots will go here -->
-    
-  </div>
-  <div class="buttons" id="buttonsContainer">
-    <button class="add-button" id="addPokemonButton" type="button">Adicionar Pokémon</button>
-    <button class="add-button" id="exportTeamButton" type="button">Exportar Equipe</button>
-  </div>
-  
-  
-
-  <script src="assets/js/teambuild/team-builder.js" defer></script>
- 
-</body>
-
-</html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus times — Pokoach</title><link rel="stylesheet" href="assets/css/teambuild.css"></head>
+<body><nav><a href="teambuild.html">Times</a><a href="calculator.html">Calculadora</a><a href="analysis.html">Análise</a><a href="#" id="logoutLink">Sair</a></nav>
+<main class="teams-page"><div class="teams-heading"><div><p class="eyebrow">POKOACH · TEAM BUILDER</p><h1>Meus times</h1><p class="muted">Crie, organize e edite suas equipes. Tudo fica salvo na sua conta.</p></div><button class="add-button" id="newTeamButton">+ Criar novo time</button></div>
+<p id="teamsMessage" role="status"></p><div id="teamsGrid" class="teams-grid"></div></main>
+<script src="assets/js/teambuild/teams-list.js" defer></script><script src="assets/js/auth/session.js" defer></script></body></html>

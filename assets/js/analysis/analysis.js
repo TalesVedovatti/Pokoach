@@ -60,6 +60,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchAllPokemonNames();
 
+    // Carrega os seis nomes do time selecionado, sem alterar os dados salvos.
+    async function loadSelectedTeamForAnalysis() {
+        const teamId = new URLSearchParams(window.location.search).get('teamId');
+        if (teamId === null) return;
+        if (!/^[1-9]\d*$/.test(teamId)) {
+            teamAnalysisContent.textContent = 'Identificador de time inválido.';
+            return;
+        }
+        try {
+            const response = await fetch(`/api/teams/${encodeURIComponent(teamId)}`, {
+                credentials: 'same-origin'
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Não foi possível carregar o time.');
+            }
+            const { team } = await response.json();
+            if (!team || !Array.isArray(team.pokemon)) throw new Error('Dados do time inválidos.');
+            pokemonInputs.forEach((item, index) => {
+                item.input.value = typeof team.pokemon[index]?.name === 'string'
+                    ? team.pokemon[index].name : '';
+                item.suggestionsDiv.replaceChildren();
+                item.suggestionsDiv.classList.remove('show');
+            });
+            const heading = document.getElementById('selectedTeamName');
+            if (heading) heading.textContent = `Time carregado: ${team.name}`;
+        } catch (error) {
+            teamAnalysisContent.textContent = `Erro ao carregar o time: ${error.message}`;
+        }
+    }
+
+    loadSelectedTeamForAnalysis();
+
+
     pokemonInputs.forEach(item => {
         item.input.addEventListener('input', () => {
             clearTimeout(fetchTimeout);
@@ -466,7 +500,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 analysisHtml += `<p>Considerando suas maiores vulnerabilidades, procure Pokémon que sejam **resistentes ou imunes** aos tipos listados acima. Aqui estão alguns tipos que podem ajudar a cobrir suas fraquezas:</p><ul>`;
                 
                 if (suggestedTypesForCoverage.size > 0) {
-                    suggestedTypesForCoverage.forEach(type => {
+                    // Mostra somente os 5 tipos que cobrem o maior número de
+                    // Pokémon vulneráveis. Fraquezas 2x e 4x contam por membro,
+                    // sem favorecer automaticamente uma única fraqueza 4x.
+                    const topFiveTypes = [...suggestedTypesForCoverage]
+                        .map(type => ({
+                            type,
+                            score: ALL_TYPES.reduce((total, attackType) => {
+                                const interactions = TYPE_INTERACTIONS[type];
+                                const resists = interactions.resists.includes(attackType) ||
+                                    interactions.immune_to.includes(attackType);
+                                return total + (resists
+                                    ? typeSummary[attackType].singleWeak + typeSummary[attackType].doubleWeak
+                                    : 0);
+                            }, 0)
+                        }))
+                        .sort((a, b) => b.score - a.score || a.type.localeCompare(b.type))
+                        .slice(0, 5);
+                    topFiveTypes.forEach(({ type }) => {
                         analysisHtml += `<li><span class="type-${type}">${type.charAt(0).toUpperCase() + type.slice(1)}</span></li>`;
                     });
                 } else {

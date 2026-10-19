@@ -12,12 +12,13 @@
     <nav> <a href="teambuild.html">Times</a>
         <a href="calculator.html">Calculadora</a>
         <a href="analysis.html">Análise</a>
-        <a href="index.html">Sair</a>
+        <a href="#" id="logoutLink">Sair</a>
     </nav>
 
     <div class="container">
         <h1>Analisador de Fraquezas Pokémon</h1>
 
+        <p id="selectedTeamName" role="status"></p>
         <div class="pokemon-selection">
             <div class="input-group">
                 <label for="pokemon1">Pokémon 1:</label>
@@ -86,6 +87,7 @@
     </div>
 
     <script src="assets/js/analysis/analysis.js" defer></script>
+<script src="assets/js/auth/session.js" defer></script>
 </body>
 
 </html>
